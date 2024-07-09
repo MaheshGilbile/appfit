@@ -53,10 +53,3 @@ def insertMetricsIntoDB(metrics) {
     sql.executeInsert('INSERT INTO devops_metrics (application_name, branch_name, unit_test_status, sonar_status, artifactory_upload_status, total_success_builds, total_failed_builds, total_success_rate, average_build_time, success_rate_of_build) VALUES (?,?,?,?,?,?,?,?,?,?)',
                       metrics['application_name'], metrics['branch_name'], metrics['unit_test_status'], metrics['sonar_status'], metrics['artifactory_upload_status'], metrics['total_success_builds'], metrics['total_failed_builds'], metrics['total_success_rate'], metrics['average_build_time'], metrics['success_rate_of_build'])
 }
-
-// Example usage
-def job = Jenkins.instance.getItem('AppFit2')
-def build = job.getLastBuild()
-
-def metrics = collectMetrics(job, build)
-insertMetricsIntoDB(metrics)
