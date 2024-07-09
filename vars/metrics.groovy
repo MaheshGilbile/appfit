@@ -12,28 +12,15 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    //def unitTestCoverageStage = build.getStage('Unit Test Coverage')
-   // def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
-	//metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
-	
-	// Collect unit test coverage stage status
-	def stages = build.getStages()
-	def unitTestCoverageStage
-	stages.each { stage ->
-    if (stage.getName() == 'Unit Test Coverage') {
-        unitTestCoverageStage = stage
-		}
-	}
-	def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
-	metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
+	metrics['unit_test_coverage_status'] = build.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect Sonar status
     def sonarStatus = build.getAction(hudson.plugins.sonar.SonarAction.class)?.status
     metrics['sonar_status'] = sonarStatus? 'PASS' : 'FAIL'
 
     // Collect Artifactory upload status
-    def artifactoryUploadStatus = build.getAction(com.jfrog.hudson.ArtifactoryBuilder.class)?.status
-    metrics['artifactory_upload_status'] = artifactoryUploadStatus? 'PASS' : 'FAIL'
+    //def artifactoryUploadStatus = 
+    metrics['artifactory_upload_status'] = build.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect total success builds
     metrics['total_success_builds'] = job.builds.findAll { it.result == hudson.model.Result.SUCCESS }.size()
