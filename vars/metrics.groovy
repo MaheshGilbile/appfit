@@ -2,7 +2,7 @@
 
 import groovy.sql.Sql
 
-def collectMetrics(job, build) {
+def call(job, build) {
     def metrics = [:]
 
     // Collect application name
@@ -39,8 +39,9 @@ def collectMetrics(job, build) {
 
     // Calculate success rate of build
     metrics['success_rate_of_build'] = metrics['total_success_rate']
-
+	insertMetricsIntoDB(metrics)
     return metrics
+	
 }
 
 def insertMetricsIntoDB(metrics) {
