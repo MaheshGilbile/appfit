@@ -44,9 +44,9 @@ def collectMetrics(job, build) {
 }
 
 def insertMetricsIntoDB(metrics) {
-    def dbUrl = 'jdbc:postgresql://localhost:5432/mydb'
-    def dbUser = 'yuser'
-    def dbPassword = 'ypassword'
+    def dbUrl = 'jdbc:postgresql://localhost:5432/postgres'
+    def dbUser = 'postgres'
+    def dbPassword = 'admin123'
 
     def sql = Sql.newInstance(dbUrl, dbUser, dbPassword, 'org.postgresql.Driver')
 
@@ -55,7 +55,7 @@ def insertMetricsIntoDB(metrics) {
 }
 
 // Example usage
-def job = Jenkins.instance.getItem('my-job')
+def job = Jenkins.instance.getItem('AppFit2')
 def build = job.getLastBuild()
 
 def metrics = collectMetrics(job, build)
