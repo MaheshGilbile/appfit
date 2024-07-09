@@ -12,9 +12,9 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    def testResultAction = build.getTestResultAction()
-    def unitTestStatus = testResultAction?.results.find { it.name == 'Unit Test Coverage' }?.status
-    metrics['unit_test_status'] = unitTestStatus? 'PASS' : 'FAIL'
+    def unitTestCoverageStage = build.getStage('Unit Test Coverage')
+    def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
+	metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
 
     // Collect Sonar status
     def sonarStatus = build.getAction(hudson.plugins.sonar.SonarAction.class)?.status
