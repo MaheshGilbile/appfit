@@ -12,7 +12,7 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    def unitTestStatus = build.testResult.action.results.find { it.name == 'Unit Tests' }?.status
+    def unitTestStatus = build.testResult.action.results.find { it.name == 'Unit Test Coverage' }?.status
     metrics['unit_test_status'] = unitTestStatus? 'PASS' : 'FAIL'
 
     // Collect Sonar status
