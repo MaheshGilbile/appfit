@@ -1,6 +1,9 @@
 // metrics.groovy
 
 import groovy.sql.Sql
+import jenkins.model.Jenkins
+import org.jenkinsci.plugins.pipeline.graphview.FlowGraphTable
+import org.jenkinsci.plugins.workflow.job.WorkflowRun
 
 def call(job, build) {
     def metrics = [:]
@@ -12,20 +15,16 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    //def unitTestCoverageStage = build.getStage('Unit Test Coverage')
-   // def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
-	//metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
-	
-	// Collect unit test coverage stage status
-	def stages = build.getStages()
-	def unitTestCoverageStage
-	stages.each { stage ->
-    if (stage.getName() == 'Unit Test Coverage') {
-        unitTestCoverageStage = stage
-		}
-	}
-	def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
-	metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
+    def flowGraphTable = new FlowGraphTable(build)
+    def stages = flowGraphTable.getStages()
+    def unitTestCoverageStage
+    stages.each { stage ->
+        if (stage.getName() == 'Unit Test Coverage') {
+            unitTestCoverageStage = stage
+        }
+    }
+    def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
+    metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
 
     // Collect Sonar status
     def sonarStatus = build.getAction(hudson.plugins.sonar.SonarAction.class)?.status
@@ -51,6 +50,7 @@ def call(job, build) {
 
     // Calculate success rate of build
     metrics['success_rate_of_build'] = metrics['total_success_rate']
+
     insertMetricsIntoDB(metrics)
     return metrics
 }
@@ -63,5 +63,5 @@ def insertMetricsIntoDB(metrics) {
     def sql = Sql.newInstance(dbUrl, dbUser, dbPassword, 'org.postgresql.Driver')
 
     sql.executeInsert('INSERT INTO AppFitMetrics (application_name, branch_name, unit_test_status, sonar_status, artifactory_upload_status, total_success_builds, total_failed_builds, total_success_rate, average_build_time, success_rate_of_build) VALUES (?,?,?,?,?,?,?,?,?,?)',
-                      metrics['application_name'], metrics['branch_name'], metrics['unit_test_status'], metrics['sonar_status'], metrics['artifactory_upload_status'], metrics['total_success_builds'], metrics['total_failed_builds'], metrics['total_success_rate'], metrics['average_build_time'], metrics['success_rate_of_build'])
+                      metrics['application_name'], metrics['branch_name'], metrics['unit_test_coverage_status'], metrics['sonar_status'], metrics['artifactory_upload_status'], metrics['total_success_builds'], metrics['total_failed_builds'], metrics['total_success_rate'], metrics['average_build_time'], metrics['success_rate_of_build'])
 }
