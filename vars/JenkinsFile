@@ -65,15 +65,5 @@ pipeline {
                 }
             }
         }
-       stage('Collect Metrics') {
-            steps {script {
-                def job = Jenkins.instance.getItem('AppFit2')
-                def build = job.getLastBuild()
-
-                def metrics = collectMetrics(job, build)
-                insertMetricsIntoDB(metrics)
-				}
-            }
-        }
     }
 }
