@@ -1,12 +1,7 @@
 // metrics.groovy
 
 import groovy.sql.Sql
-import jenkins.model.Jenkins
-import jenkins.model.JenkinsInstance
-import org.jenkinsci.plugins.pipeline.graphview.FlowGraphTable
-import org.jenkinsci.plugins.workflow.job.WorkflowRun
-import hudson.model.Result
-import hudson.plugins.sonar.SonarAction
+
 
 def call(job, build) {
     def metrics = [:]
@@ -20,8 +15,8 @@ def call(job, build) {
 	metrics['unit_test_coverage_status'] = job.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect Sonar status
-    def sonarStatus = build.getAction(SonarAction.class)?.status
-    metrics['sonar_status'] = sonarStatus? 'PASS' : 'FAIL'
+    //def sonarStatus = build.getAction(SonarAction.class)?.status
+    metrics['sonar_status'] = job.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect Artifactory upload status
     //def artifactoryUploadStatus = 
