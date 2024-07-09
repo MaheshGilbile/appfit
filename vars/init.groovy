@@ -10,7 +10,7 @@ class MetricsCollector extends hudson.model.BuildListener {
     void completed(hudson.model.Build build, hudson.model.TaskListener listener) {
         try {
             def job = build.getProject()
-            def metrics = collectMetrics(job, build)
+            def metrics = metrics.collectMetrics(job, build)
             metrics.insertMetricsIntoDB(metrics)
         } catch (Exception e) {
             listener.error("Error collecting metrics: ${e.message}")
