@@ -12,7 +12,8 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    def unitTestStatus = build.testResult.action.results.find { it.name == 'Unit Test Coverage' }?.status
+    def testResultAction = build.getTestResultAction()
+    def unitTestStatus = testResultAction?.results.find { it.name == 'Unit Test Coverage' }?.status
     metrics['unit_test_status'] = unitTestStatus? 'PASS' : 'FAIL'
 
     // Collect Sonar status
@@ -39,9 +40,8 @@ def call(job, build) {
 
     // Calculate success rate of build
     metrics['success_rate_of_build'] = metrics['total_success_rate']
-	insertMetricsIntoDB(metrics)
+    insertMetricsIntoDB(metrics)
     return metrics
-	
 }
 
 def insertMetricsIntoDB(metrics) {
