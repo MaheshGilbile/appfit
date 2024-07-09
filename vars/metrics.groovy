@@ -12,8 +12,19 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-    def unitTestCoverageStage = build.getStage('Unit Test Coverage')
-    def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
+    //def unitTestCoverageStage = build.getStage('Unit Test Coverage')
+   // def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
+	//metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
+	
+	// Collect unit test coverage stage status
+	def stages = build.getStages()
+	def unitTestCoverageStage
+	stages.each { stage ->
+    if (stage.getName() == 'Unit Test Coverage') {
+        unitTestCoverageStage = stage
+		}
+	}
+	def unitTestCoverageStatus = unitTestCoverageStage?.getResult()
 	metrics['unit_test_coverage_status'] = unitTestCoverageStatus?.toString()
 
     // Collect Sonar status
