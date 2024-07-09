@@ -4,7 +4,6 @@ import groovy.sql.Sql
 
 def call(job, build) {
     def metrics = [:]
-
     // Collect application name
     metrics['application_name'] = job.name
 
@@ -12,7 +11,7 @@ def call(job, build) {
     metrics['branch_name'] = build.envVars['BRANCH_NAME']
 
     // Collect unit test status
-	metrics['unit_test_coverage_status'] = build.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
+	metrics['unit_test_coverage_status'] = job.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect Sonar status
     def sonarStatus = build.getAction(hudson.plugins.sonar.SonarAction.class)?.status
@@ -20,7 +19,7 @@ def call(job, build) {
 
     // Collect Artifactory upload status
     //def artifactoryUploadStatus = 
-    metrics['artifactory_upload_status'] = build.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
+    metrics['artifactory_upload_status'] = job.getBuilds().last().getResult().toString() == 'SUCCESS' ? 1 : 0
 
     // Collect total success builds
     metrics['total_success_builds'] = job.builds.findAll { it.result == hudson.model.Result.SUCCESS }.size()
